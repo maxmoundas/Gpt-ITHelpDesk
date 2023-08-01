@@ -46,11 +46,11 @@ with open(filename, 'w') as file:
 
         # Generate actions using GPT-3
         if len(user_response) != 0:
-            action_prompt = f"User's response: {user_response}. The current state is {state}. The suggested actions are {actions}."
+            action_prompt = f"You are the Help Desk, The user's response is : {user_response}. The current state is {state}. The suggested actions are {actions}."
             action_response = call_gpt(action_prompt, "assistant")
             file.write(f"Assistant's response: {action_response}\n")
 
-            user_prompt = f"The actions taken are {action_response}. What is the user's response?"
+            user_prompt = f"You are the user experiencing issues. The actions taken are {action_response}. What is the user's response?"
             user_response = call_gpt(user_prompt, "user")
             file.write(f"User's response: {user_response}\n")
         else:
@@ -68,6 +68,5 @@ with open(filename, 'w') as file:
                 state = action['nextState']
                 break
         print(f"The current state is {state}")
-        interaction_count += 1
-
+        interaction_count +=1
     print(interaction_count)
