@@ -54,24 +54,32 @@ with open(filename, 'w') as file:
     # Main loop
 
     # problem could be that user_response != "Y" when it should be
-    while interaction_count < max_interactions and user_response != 'Y':
+    phrase = "The user's response is: "
+    while interaction_count < max_interactions:
         # Fetch actions for the current state
         actions = next(s['actions'] for s in state_machine['states'] if s['name'] == state)
 
         # Generate actions using GPT-3
         if len(user_response) != 0:
             print("user_response:", user_response)
+
+            user_response = user_response.replace(phrase, "")
             action_prompt = f"The user's response is: {user_response}. The current state is {state}. The suggested actions are {actions}."
             conversation_history.append({"role": "assistant", "content": action_prompt})
             action_response = call_gpt(conversation_history)
+            file.write(f"*******************************************************\n")
             file.write(f"Assistant's response: {action_response}\n")
-
-            print("action_response: ", action_response)
-            user_prompt = f"The actions taken are {action_response}.What is the user's response? If the user is satisfied enough with the result, respond with 'Y' and nothing else. I repeat, respond with 'Y' and nothing else"
+            print("action_response: ", action_response, "\n")
+            # might wanna change the prompt what is the user's response?
+            # this prompt doesn't work either
+            # It's like ChatGPT forgot about the first user and action prompts
+            user_prompt = f"The actions taken are {action_response}."
             conversation_history.append({"role": "user", "content": user_prompt})
             user_response = call_gpt(conversation_history)
-            file.write(f"*******************************************************\n"
-                       f"User's response: {user_response}\n")
+            file.write(f"*******************************************************\n")
+            user_response = user_response.replace(phrase, "")
+            file.write(f"User's response: {user_response}\n")
+            print("User's response: ", user_response, "\n")
         else:
             action_prompt = f"You are IT Help Desk. You are given state machine in a JSON format for problem of a user. " \
                             f"This is the state machine: {state_machine}. Current state is 'initial', you need to help them reach 'Desired' state. " \
@@ -79,14 +87,15 @@ with open(filename, 'w') as file:
             conversation_history.append({"role": "assistant", "content": action_prompt})
             action_response = call_gpt(conversation_history)
             file.write(f"Assistant's response: {action_response}\n")
-            print("first action_response: ", action_response)
+            print("first action_response: ", action_response, "\n")
 
-            user_prompt = f"Act like a user that is experiencing IT issues. Your problem given like a state machine looks like this in JSON format: {state_machine}. The initial state is 'initial' and I will help you ge tot 'desired'. Follow my orders step by step and report to me with the result."
+            user_prompt = f"Act like a user that is experiencing IT issues. Your problem given like a state machine looks like this in JSON format: {state_machine}. " \
+                          f"The initial state is 'initial' and I will help you get to 'desired'. Follow my orders step by step and report to me with the result."
             conversation_history.append({"role": "user", "content": user_prompt})
             user_response = call_gpt(conversation_history)
             file.write(f"*******************************************************\n"
                        f"User's response: {user_response}\n")
-            print("first user_response: ", user_response)
+            print("first user_response: ", user_response, "\n")
 
         # Update the state based on the user's responses and the defined transitions
         # this might be a problem too, is user_response correct here?
@@ -95,7 +104,10 @@ with open(filename, 'w') as file:
             if action['name'] in user_response:
                 state = action['nextState']
                 break
-        print(f"The current state is {state}")
+        print(f"The real current state is {state}\n")
         interaction_count += 1
-    file.write(f"Number of steps taken:{interaction_count}")
+
+        if state == "Desired":
+            break
+    file.write(f"Number of steps taken: {interaction_count}")
     print(interaction_count)
