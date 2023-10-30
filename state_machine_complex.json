@@ -1,0 +1,139 @@
+{
+  "states": [
+    {
+      "name": "Initial",
+      "description": "Blinking red light",
+      "impact": "No Internet connection",
+      "actions": [
+        {
+          "name": "Power On",
+          "nextState": "PoweringOn"
+        }
+      ]
+    },
+    {
+      "name": "PoweringOn",
+      "description": "Flashing lights in sequence",
+      "impact": "No Internet connection",
+      "actions": [
+        {
+          "name": "Power On Complete",
+          "nextState": "SelfTest",
+          "conditions": ["PowerSupplyCheck"]
+        }
+      ],
+      "nestedStates": [
+        {
+          "name": "PowerSupplyCheck",
+          "description": "Checking power supply",
+          "impact": "No Internet connection",
+          "timedTransition": {
+            "time": 5,
+            "nextState": "HardwareCheck"
+          }
+        },
+        {
+          "name": "HardwareCheck",
+          "description": "Checking hardware",
+          "impact": "No Internet connection",
+          "timedTransition": {
+            "time": 10,
+            "nextState": "PoweringOn"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SelfTest",
+      "description": "Performing self-tests",
+      "impact": "No Internet connection",
+      "actions": [
+        {
+          "name": "Tests Complete",
+          "nextState": "Registration"
+        }
+      ]
+    },
+    {
+      "name": "Registration",
+      "description": "Solid green light",
+      "impact": "No Internet connection",
+      "actions": [
+        {
+          "name": "Register Modem",
+          "nextState": "Desired",
+          "roles": ["Admin"]
+        }
+      ]
+    },
+    {
+      "name": "Desired",
+      "description": "Solid green light",
+      "impact": "Stable Internet connection",
+      "actions": [
+        {
+          "name": "Reset Modem",
+          "nextState": "Initial"
+        },
+        {
+          "name": "Power Off",
+          "nextState": "PoweringOff"
+        }
+      ],
+      "parallelStates": [
+        {
+          "name": "WiFi",
+          "description": "WiFi Module",
+          "impact": "Affects WiFi connection",
+          "actions": [
+            {
+              "name": "Disable WiFi",
+              "nextState": "WiFiDisabled"
+            },
+            {
+              "name": "Enable WiFi",
+              "nextState": "WiFiEnabled"
+            }
+          ]
+        },
+        {
+          "name": "Firewall",
+          "description": "Firewall Module",
+          "impact": "Affects network security",
+          "actions": [
+            {
+              "name": "Enable Firewall",
+              "nextState": "FirewallEnabled"
+            },
+            {
+              "name": "Disable Firewall",
+              "nextState": "FirewallDisabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PoweringOff",
+      "description": "Flashing lights in sequence",
+      "impact": "No Internet connection",
+      "actions": [
+        {
+          "name": "Power Off Complete",
+          "nextState": "PoweredOff"
+        }
+      ]
+    },
+    {
+      "name": "PoweredOff",
+      "description": "No lights",
+      "impact": "No Internet connection",
+      "actions": [
+        {
+          "name": "Power On",
+          "nextState": "PoweringOn"
+        }
+      ]
+    }
+  ]
+}

@@ -4,3 +4,5 @@
   {"name": "Desired", "description": "Solid green light", "impact": "Stable Internet connection", "actions": [{"name": "Reset Modem", "nextState": "Initial"}, {"name": "Power Off", "nextState": "PoweringOff"}]},
   {"name": "PoweringOff", "description": "Flashing lights in sequence", "impact": "No Internet connection", "actions": [{"name": "Power Off Complete", "nextState": "PoweredOff"}]},
   {"name": "PoweredOff", "description": "No lights", "impact": "No Internet connection", "actions": [{"name": "Power On", "nextState": "PoweringOn"}]}]}
+
+
