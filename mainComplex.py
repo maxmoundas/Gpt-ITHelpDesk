@@ -3,6 +3,7 @@
 import json
 import openai
 import datetime
+import networkx as nx
 
 # Get current date and time
 now = datetime.datetime.now()
@@ -38,6 +39,37 @@ with open('api_key.txt', 'r') as file:
     api_key = file.read().strip()
 
 openai.api_key = api_key
+
+# Function to calculate the cyclomatic complexity
+def calculate_cyclomatic_complexity(graph):
+    e = sum(len(targets) for targets in graph.values())  # number of edges
+    n = len(graph)  # number of nodes
+    p = 1  # assuming one connected component
+    cc = e - n + 2 * p
+    return cc
+
+# Function to calculate the average degree
+def calculate_average_degree(graph):
+    total_edges = sum(len(targets) for targets in graph.values())
+    total_nodes = len(graph)
+    return total_edges / total_nodes if total_nodes > 0 else 0
+
+
+# Creating a NetworkX graph from the state machine graph
+G = nx.DiGraph()
+
+# Adding nodes and edges to the NetworkX graph
+for state in state_machine['states']:
+    state_name = state['name']
+    actions = state.get('actions', [])
+
+    # Adding the current state as a node
+    G.add_node(state_name)
+
+    # Adding edges based on actions
+    for action in actions:
+        next_state = action['nextState']
+        G.add_edge(state_name, next_state)
 
 # Initialize the state
 state = "Initial"
@@ -109,5 +141,39 @@ with open(filename, 'w') as file:
 
         if state == "Desired":
             break
-    file.write(f"Number of steps taken: {interaction_count}")
+    file.write(f"Number of steps taken: {interaction_count}\n")
+    node_count = len(state_machine["states"])
+    edge_count = sum(len(state["actions"]) for state in state_machine["states"])
+    graph_density = edge_count / (node_count * (node_count - 1)) if node_count > 1 else 0
+    file.write(f"Node Count: {node_count}\n")
+    file.write(f"Edge Count: {edge_count}\n")
+    file.write(f"Graph Density: {graph_density}\n")
+
+    # Calculating Cyclomatic Complexity and Average Degree
+    cyclomatic_complexity = calculate_cyclomatic_complexity(state_machine)
+    average_degree = calculate_average_degree(state_machine)
+    file.write(f"Cyclomatic Complexity: {cyclomatic_complexity}\n")
+    file.write(f"Average Degree: {average_degree}\n")
+
+    # Calculating Average Path Length (APL)
+    # APL is calculated only if the graph is strongly connected, otherwise it's infinite or undefined
+    if nx.is_strongly_connected(G):
+        average_path_length = nx.average_shortest_path_length(G)
+    else:
+        # Handling the case where the graph is not strongly connected
+        # Computing average path length for each connected component
+        apl_values = []
+        for component in nx.strongly_connected_components(G):
+            subgraph = G.subgraph(component)
+            apl_values.append(nx.average_shortest_path_length(subgraph))
+
+        # Averaging over all strongly connected components
+        average_path_length = sum(apl_values) / len(apl_values) if apl_values else float('inf')
+
+    # Calculating Network Diameter (ND)
+    # ND is the maximum shortest path length in the graph
+    network_diameter = nx.diameter(G) if nx.is_strongly_connected(G) else max(nx.diameter(G.subgraph(c)) for c in nx.strongly_connected_components(G))
+    file.write(f"Average Path Length: {average_path_length}\n")
+    file.write(f"Network Diameter: {network_diameter}\n")
+
     print(interaction_count)
