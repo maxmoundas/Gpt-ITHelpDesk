@@ -1,0 +1,5 @@
+As the state machine got more complex, the node and edge count got larger, and it took more interactions to complete the conversation.
+Also, the graph density decreased, the cyclomatic complexity fluctuated, and the average degree decreased then increased.
+Next, the average path length and average diameter increased.
+Finally, the conversation took more time to complete.
+This is all in line with what I expected, except for the cyclomatic complexity and average degree fluctuation.

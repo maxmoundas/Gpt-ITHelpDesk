@@ -31,7 +31,7 @@ def call_gpt(messages):
 
 
 # Load the state machine from a file
-with open("state_machine.json") as file:
+with open("state_machine_more_complex.json") as file:
     state_machine = json.load(file)
 
 # Get the OpenAI API key
@@ -177,4 +177,3 @@ with open(filename, 'w') as file:
     file.write(f"Network Diameter: {network_diameter}\n")
 
     print(interaction_count)
-

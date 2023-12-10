@@ -155,7 +155,7 @@ With this note, we've successfully completed the objective of transitioning from
 *******************************************************
 User's response: The user replied: Yes, I am completely satisfied with your help. Thanks once more and goodbye!
 
-It's great to hear that you're satisfied with the assistance provided! It was my pleasure to help, and I'm glad we achieved the 'Desired' state. Remember, we're here whenever you need any further help. Goodbye and take care!
+It's great to hear that you're satisfied with the assistance pavrovided! It was my pleasure to help, and I'm glad we achieved the 'Desired' state. Remember, we're here whenever you need any further help. Goodbye and take care!
 
 Having now reached the 'Desired' state which means a stable Internet connection, the IT Help Desk issue has been successfully resolved. If the user has further issues or if they wish to tweak settings like disabling WiFi or adjusting the Firewall settings, they can reach out again. Our conversation effectively ends here. The current state is PoweringOn. The suggested actions are [{'name': 'Power On Complete', 'nextState': 'SelfTest', 'conditions': ['PowerSupplyCheck']}].. The current state is SelfTest. The suggested actions are [{'name': 'Tests Complete', 'nextState': 'Registration'}].. The current state is Registration. The suggested actions are [{'name': 'Register Modem', 'nextState': 'Desired', 'roles': ['Admin']}].
 Number of steps taken: 10
